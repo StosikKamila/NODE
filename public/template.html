@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <style>
+        .plane{
+            display:grid;
+            grid-template-columns: 20vw 20vw 20vw;
+            grid-template-rows: 20vw 20vw 20vw;
+        }
+        .plane div{
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+    <h1>Kolej: <b class="kolej"></b></h1>
+    <div class="wrapper">
+        <div class="plane">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <script>
+        // console.log(location.pathname)
+        document.querySelectorAll(".plane div").forEach( (element,index) =>{
+            element.addEventListener("click", () => {
+                // console.log(index)
+                fetch("/data?player="+location.pathname+"&index="+index)
+           })
+        })
+        const sign = (key) => {
+                if(key == "/kolko"){return "⭕"}
+                if(key == "/krzyzyk"){return "❌"}
+                return "";
+        }
+        const interval = setInterval( () => {
+            fetch("/sendData")
+            .then(r => r.json())
+            .then(r => {
+                if(r.over){
+                    clearInterval(interval)
+                }
+                document.querySelector(".kolej").innerText = sign(r.possibilities[r.turn]);
+                r.plane.forEach((info,index) => {
+                    document.querySelectorAll(".plane div")[index].innerText = sign(info);
+            })
+        })
+    }, 500)
+    </script>
+</body>
+</html>
